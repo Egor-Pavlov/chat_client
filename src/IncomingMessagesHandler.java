@@ -1,3 +1,4 @@
+import javax.swing.*;
 import java.io.*;
 
 /**
@@ -5,17 +6,21 @@ import java.io.*;
  */
 class IncomingMessagesHandler implements Runnable {
     private BufferedReader in;
+    private gui gui;
 
-    public IncomingMessagesHandler(BufferedReader in) {
+    public IncomingMessagesHandler(BufferedReader in, gui gui) {
         this.in = in;
+        this.gui = gui;
     }
 
     @Override
     public void run() {
-        String message;
         try {
+            String message;
             while ((message = in.readLine()) != null) {
-                System.out.println(message);
+                // Update the GUI in the Event Dispatch Thread
+                String finalMessage = message;
+                SwingUtilities.invokeLater(() -> gui.setText(finalMessage));
             }
         } catch (IOException e) {
             e.printStackTrace();
