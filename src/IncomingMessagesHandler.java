@@ -19,8 +19,8 @@ class IncomingMessagesHandler implements Runnable {
             String message;
             while ((message = in.readLine()) != null) {
                 // Update the GUI in the Event Dispatch Thread
-                String finalMessage = message;
-                SwingUtilities.invokeLater(() -> gui.setText(finalMessage));
+                String finalMessage = message.replace(":", ":\n    ");
+                SwingUtilities.invokeLater(() -> gui.setText(finalMessage + "\n"));
             }
         } catch (IOException e) {
             e.printStackTrace();

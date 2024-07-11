@@ -1,35 +1,50 @@
+import input_veryfiers.IPInputVerifier;
+import input_veryfiers.PortInputVerifier;
+
 import javax.swing.*;
+import javax.swing.text.MaskFormatter;
 import java.awt.*;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.io.*;
 import java.net.*;
+import java.text.ParseException;
+import java.util.Objects;
 
 public class gui {
-    private static final String SERVER_ADDRESS = "localhost";
-    private static final int SERVER_PORT = 12345;
+    private static String SERVER_ADDRESS = "localhost";
+    private static int SERVER_PORT = 12345;
     private PrintWriter out;
     private JButton button1;
     private JTextField textField1;
     private JPanel panel1;
     private JTextArea textArea1;
+    private JFormattedTextField usernameTextField;
+    private JFormattedTextField ipTextField;
+    private JFormattedTextField portTextField;
 
     public synchronized void setText(String text) {
         textArea1.append("\n" + text);
     }
 
     public gui() {
-        button1.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent actionEvent) {
-                // Send text to the socket
-                if (out != null) {
-                    String text = textField1.getText();
-                    out.println(text);
-                    textField1.setText("");
-                    textArea1.append("\n");
-                    textArea1.append("you: " + text);
-                }
+        button1.addActionListener(event -> {
+            String username = "anonymous";
+            if (!Objects.equals(usernameTextField.getText(), "")){
+                username = usernameTextField.getText();
+            }
+
+            if (textField1.getText().equals("")){
+                return;
+            }
+            // Send text to the socket
+            if (out != null && ipTextField.getInputVerifier().verify(ipTextField) && portTextField.getInputVerifier().verify(portTextField)) {
+                String text = textField1.getText();
+                out.println(username + ":" + text);
+                textField1.setText("");
+                textArea1.append("\nyou:\n    " + text);
+            }
+            else{
+                // Обработка некорректного ввода
+                JOptionPane.showMessageDialog(null, "IP сервера или порт введен некорректно.", "Ошибка ввода", JOptionPane.ERROR_MESSAGE);
             }
         });
     }
@@ -49,23 +64,38 @@ public class gui {
     }
 
     public static void main(String[] args) {
-        // Create GUI instance
+        //создание гуи
         gui form = new gui();
-        // Create JFrame window
+        //Создание окна
         JFrame frame = new JFrame("Lab12");
 
-        // Set the main panel of the form as the content of the window
+        //Запихивание элементов в окно
         frame.setContentPane(form.panel1);
-        // Set the default close operation
+        //Установка действия на кнопку Х
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        // Pack the window to fit the contents
+        //Упаковка элементов
         frame.pack();
-        // Set minimum window size
-        frame.setMinimumSize(new Dimension(300, 200));
-        // Make the window visible
+        //Установка минимальных размеров окна
+        frame.setMinimumSize(new Dimension(1000, 600));
+        //Установка видимости окна
         frame.setVisible(true);
 
-        // Initialize the socket connection
+        //Инициализация сокета для прослушивания сервера
         form.initializeSocket();
+    }
+
+    /**
+     * Кастомное создание элементов - в них помещается валидатор значений
+     */
+    private void createUIComponents() {
+        // Настройка поля для IP-адреса без маски
+        ipTextField = new JFormattedTextField();
+        ipTextField.setColumns(15);
+        ipTextField.setInputVerifier(new IPInputVerifier());
+
+        // Настройка поля для порта без маски
+        portTextField = new JFormattedTextField();
+        portTextField.setColumns(5);
+        portTextField.setInputVerifier(new PortInputVerifier());
     }
 }
