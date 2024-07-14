@@ -13,15 +13,7 @@
       <color color="-16777216"/>
     </border>
     <children>
-      <component id="efae3" class="javax.swing.JTextField" binding="textField1" default-binding="true">
-        <constraints>
-          <grid row="1" column="0" row-span="1" col-span="1" vsize-policy="0" hsize-policy="6" anchor="8" fill="1" indent="1" use-parent-layout="false">
-            <preferred-size width="755" height="34"/>
-          </grid>
-        </constraints>
-        <properties/>
-      </component>
-      <grid id="ae0fa" layout-manager="GridLayoutManager" row-count="9" column-count="1" same-size-horizontally="false" same-size-vertically="false" hgap="-1" vgap="-1">
+      <grid id="ae0fa" layout-manager="GridLayoutManager" row-count="10" column-count="1" same-size-horizontally="false" same-size-vertically="false" hgap="-1" vgap="-1">
         <margin top="0" left="0" bottom="0" right="0"/>
         <constraints>
           <grid row="0" column="1" row-span="2" col-span="1" vsize-policy="3" hsize-policy="3" anchor="0" fill="3" indent="0" use-parent-layout="false"/>
@@ -31,7 +23,7 @@
         <children>
           <vspacer id="28cb6">
             <constraints>
-              <grid row="6" column="0" row-span="1" col-span="1" vsize-policy="6" hsize-policy="1" anchor="0" fill="2" indent="0" use-parent-layout="false"/>
+              <grid row="7" column="0" row-span="1" col-span="1" vsize-policy="6" hsize-policy="1" anchor="0" fill="2" indent="0" use-parent-layout="false"/>
             </constraints>
           </vspacer>
           <component id="3950b" class="javax.swing.JLabel">
@@ -88,7 +80,7 @@
           </component>
           <component id="13813" class="javax.swing.JButton" binding="button1" default-binding="true">
             <constraints>
-              <grid row="7" column="0" row-span="1" col-span="1" vsize-policy="0" hsize-policy="3" anchor="0" fill="1" indent="0" use-parent-layout="false"/>
+              <grid row="8" column="0" row-span="1" col-span="1" vsize-policy="0" hsize-policy="3" anchor="0" fill="1" indent="0" use-parent-layout="false"/>
             </constraints>
             <properties>
               <text value="Отправить"/>
@@ -97,7 +89,7 @@
           <grid id="5c0e6" layout-manager="GridLayoutManager" row-count="1" column-count="1" same-size-horizontally="false" same-size-vertically="false" hgap="-1" vgap="-1">
             <margin top="0" left="0" bottom="0" right="0"/>
             <constraints>
-              <grid row="8" column="0" row-span="1" col-span="1" vsize-policy="3" hsize-policy="3" anchor="0" fill="3" indent="0" use-parent-layout="false"/>
+              <grid row="9" column="0" row-span="1" col-span="1" vsize-policy="3" hsize-policy="3" anchor="0" fill="3" indent="0" use-parent-layout="false"/>
             </constraints>
             <properties/>
             <border type="none"/>
@@ -109,21 +101,43 @@
               </vspacer>
             </children>
           </grid>
+          <component id="c171c" class="javax.swing.JButton" binding="connectButton">
+            <constraints>
+              <grid row="6" column="0" row-span="1" col-span="1" vsize-policy="0" hsize-policy="3" anchor="0" fill="1" indent="0" use-parent-layout="false"/>
+            </constraints>
+            <properties>
+              <text value="Подключиться"/>
+            </properties>
+          </component>
         </children>
       </grid>
-      <component id="cb41f" class="javax.swing.JTextArea" binding="textArea1" default-binding="true">
+      <scrollpane id="93aff">
         <constraints>
-          <grid row="0" column="0" row-span="1" col-span="1" vsize-policy="6" hsize-policy="6" anchor="0" fill="3" indent="1" use-parent-layout="false">
-            <preferred-size width="150" height="50"/>
+          <grid row="0" column="0" row-span="1" col-span="1" vsize-policy="7" hsize-policy="7" anchor="0" fill="3" indent="1" use-parent-layout="false"/>
+        </constraints>
+        <properties/>
+        <border type="none"/>
+        <children>
+          <component id="cb41f" class="javax.swing.JTextArea" binding="textArea1" default-binding="true">
+            <constraints/>
+            <properties>
+              <background color="-1"/>
+              <caretColor color="-16777216"/>
+              <disabledTextColor color="-16777216"/>
+              <editable value="false"/>
+              <enabled value="true"/>
+              <wrapStyleWord value="false"/>
+            </properties>
+          </component>
+        </children>
+      </scrollpane>
+      <component id="efae3" class="javax.swing.JTextField" binding="textField1" default-binding="true">
+        <constraints>
+          <grid row="1" column="0" row-span="1" col-span="1" vsize-policy="0" hsize-policy="6" anchor="8" fill="1" indent="1" use-parent-layout="false">
+            <preferred-size width="755" height="34"/>
           </grid>
         </constraints>
-        <properties>
-          <background color="-1"/>
-          <caretColor color="-16777216"/>
-          <disabledTextColor color="-16777216"/>
-          <editable value="false"/>
-          <enabled value="false"/>
-        </properties>
+        <properties/>
       </component>
     </children>
   </grid>
