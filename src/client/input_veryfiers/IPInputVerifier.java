@@ -1,4 +1,4 @@
-package input_veryfiers;
+package client.input_veryfiers;
 
 import javax.swing.*;
 import java.util.regex.Pattern;

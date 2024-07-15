@@ -1,14 +1,18 @@
-import input_veryfiers.IPInputVerifier;
-import input_veryfiers.PortInputVerifier;
+package client;
+
+import client.IncomingMessagesHandler.IncomingMessagesHandler;
+import client.input_veryfiers.IPInputVerifier;
+import client.input_veryfiers.PortInputVerifier;
 
 import javax.swing.*;
 import java.awt.*;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.io.*;
 import java.net.*;
 import java.util.Objects;
 
+/**
+ * Класс, отвечающий за функционал интерфейса (Клиентская часть)
+ */
 public class gui {
     private static String SERVER_ADDRESS = "localhost";
     private static int SERVER_PORT = 12345;
@@ -24,14 +28,29 @@ public class gui {
     private JFormattedTextField portTextField;
     private JButton connectButton;
 
+    /**
+     * Добавление текста в поле для отображения диалога
+     * @param text - текст для добавления (входящее сообщение)
+     */
     public synchronized void setText(String text) {
         textArea1.append("\n" + text);
     }
+
+    /**
+     * Получение имени пользователя из текстового поля на интерфейсе
+     * @return - введенное имя пользователя
+     */
     public synchronized String getUsername() {
         return usernameTextField.getText();
     }
 
+    /**
+     * Прослушивание событий интерфейса
+     */
     public gui() {
+        /**
+         * Нажатие на кнопку "Отправить"
+         */
         button1.addActionListener(event -> {
             String username = "anonymous";
             if (!Objects.equals(usernameTextField.getText(), "")){
@@ -52,6 +71,12 @@ public class gui {
                 JOptionPane.showMessageDialog(null, "IP сервера или порт введен некорректно.", "Ошибка ввода", JOptionPane.ERROR_MESSAGE);
             }
         });
+
+        /**
+         * Нажатие на кнопку "Подключиться".
+         * Закрытие старого сокета, если он есть, очистка полей для ввода и вывода сообщений, установка адреса сервера и порта из текстовых полей, вызов метода создания сокета
+         *
+         */
         connectButton.addActionListener(actionEvent -> {
             closeSocket();
             textField1.setText("");
@@ -61,6 +86,10 @@ public class gui {
             initializeSocket();
         });
     }
+
+    /**
+     * Отключение от сервера (закрытие сокета)
+     */
     private void closeSocket() {
         try {
             if (socket != null && !socket.isClosed()) {
@@ -77,10 +106,17 @@ public class gui {
         }
     }
 
+    /**
+     * Очистка поля с именем пользователя
+     */
     public void clearUsernameTextField() {
         usernameTextField.setText("");
     }
 
+    /**
+     * Подключение к серверу.
+     * Открывается сокет и передается имя пользователя, затем создается поток прослушивания входящих сообщений.
+     */
     private void initializeSocket() {
         try {
             socket = new Socket(SERVER_ADDRESS, SERVER_PORT);
@@ -88,7 +124,7 @@ public class gui {
             in = new BufferedReader(new InputStreamReader(socket.getInputStream()));
 
             out.println(usernameTextField.getText());
-            // Start a new thread to handle incoming messages
+            // Начинаем слушать входящие сообщения в отдельном потоке (в текущем крутится интерфейс)
             new Thread(new IncomingMessagesHandler(in, this)).start();
 
         } catch (IOException e) {
@@ -96,6 +132,10 @@ public class gui {
         }
     }
 
+    /**
+     * Точка входа, создание окна, вызов конструктора класса gui
+     * @param args
+     */
     public static void main(String[] args) {
         //создание гуи
         gui form = new gui();
@@ -112,9 +152,6 @@ public class gui {
         frame.setMinimumSize(new Dimension(1000, 600));
         //Установка видимости окна
         frame.setVisible(true);
-
-//        //Инициализация сокета для прослушивания сервера
-//        form.initializeSocket();
     }
 
     /**
@@ -131,4 +168,5 @@ public class gui {
         portTextField.setColumns(5);
         portTextField.setInputVerifier(new PortInputVerifier());
     }
+
 }
