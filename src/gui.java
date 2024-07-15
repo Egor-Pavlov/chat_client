@@ -44,9 +44,8 @@ public class gui {
             // Send text to the socket
             if (out != null && ipTextField.getInputVerifier().verify(ipTextField) && portTextField.getInputVerifier().verify(portTextField)) {
                 String text = textField1.getText();
-                out.println(username + ":" + text);
+                out.println(username + "|" + text);
                 textField1.setText("");
-                textArea1.append("\nyou:\n    " + text);
             }
             else{
                 // Обработка некорректного ввода

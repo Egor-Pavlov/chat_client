@@ -20,21 +20,24 @@ class IncomingMessagesHandler implements Runnable {
         try {
             String message;
             String text;
+            String time;
+            String username;
             while ((message = in.readLine()) != null) {
                 System.out.println(message);
-                if (!message.contains(":")) {
+                if (!message.contains("|")) {
                     System.out.println("Invalid message format: " + message);
                     continue; // Пропускаем обработку неверного формата
                 }
-                String username = message.split(":", 2)[0]; // Разбиваем только на первый разделитель
-                text = message.split(":", 2)[1]; // Получаем оставшуюся часть после первого разделителя
+                time = message.split("\\|", 3)[0]; // Разбиваем только на первый разделитель
+                username = message.split("\\|", 3)[1]; // Разбиваем только на первый разделитель
+                text = message.split("\\|", 3)[2]; // Получаем оставшуюся часть после первого разделителя
 
                 if (Objects.equals(username, gui.getUsername())){
                     username = "You";
                 }
 
                 // Update the GUI in the Event Dispatch Thread
-                String finalMessage = username + ":\n    " + text;
+                String finalMessage = time + " " + username + ":\n    " + text;
                 SwingUtilities.invokeLater(() -> gui.setText(finalMessage + "\n"));
             }
         } catch (SocketException e) {
