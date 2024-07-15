@@ -77,12 +77,17 @@ public class gui {
         }
     }
 
+    public void clearUsernameTextField() {
+        usernameTextField.setText("");
+    }
+
     private void initializeSocket() {
         try {
             socket = new Socket(SERVER_ADDRESS, SERVER_PORT);
             out = new PrintWriter(socket.getOutputStream(), true);
             in = new BufferedReader(new InputStreamReader(socket.getInputStream()));
 
+            out.println(usernameTextField.getText());
             // Start a new thread to handle incoming messages
             new Thread(new IncomingMessagesHandler(in, this)).start();
 
