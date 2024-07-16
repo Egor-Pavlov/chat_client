@@ -3,11 +3,13 @@ package client;
 import client.IncomingMessagesHandler.IncomingMessagesHandler;
 import client.input_veryfiers.IPInputVerifier;
 import client.input_veryfiers.PortInputVerifier;
+import client.model.Message;
 
 import javax.swing.*;
 import java.awt.*;
 import java.io.*;
 import java.net.*;
+import java.time.ZonedDateTime;
 import java.util.Objects;
 
 /**
@@ -60,10 +62,12 @@ public class gui {
             if (textField1.getText().equals("")){
                 return;
             }
-            // Send text to the socket
+            // Отправка текста
+
             if (out != null && ipTextField.getInputVerifier().verify(ipTextField) && portTextField.getInputVerifier().verify(portTextField)) {
                 String text = textField1.getText();
-                out.println(username + "|" + text);
+                Message outgoingMessage = new Message(username, text, ZonedDateTime.now());
+                out.println(outgoingMessage.toJson());
                 textField1.setText("");
             }
             else{
