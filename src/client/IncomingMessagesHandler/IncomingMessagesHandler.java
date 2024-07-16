@@ -77,11 +77,9 @@ public class IncomingMessagesHandler implements Runnable {
 
                         // Получение текущей временной зоны
                         ZoneId currentZoneId = ZoneId.systemDefault();
-                        System.out.println(incomingMessage.getTimestamp());
 
                         // Преобразование даты и времени в текущую временную зону
                         ZonedDateTime dateTime = incomingMessage.getTimestamp().withZoneSameInstant(currentZoneId);
-                        System.out.println(dateTime);
                         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm");
 
                         if (!incomingMessage.getUsername().equals(gui.getUsername())) {

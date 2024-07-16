@@ -70,10 +70,6 @@ public class gui {
                 out.println(outgoingMessage.toJson());
                 textField1.setText("");
             }
-            else{
-                // Обработка некорректного ввода
-                JOptionPane.showMessageDialog(null, "IP сервера или порт введен некорректно.", "Ошибка ввода", JOptionPane.ERROR_MESSAGE);
-            }
         });
 
         /**
