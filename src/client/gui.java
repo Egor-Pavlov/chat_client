@@ -4,6 +4,8 @@ import client.IncomingMessagesHandler.IncomingMessagesHandler;
 import client.input_veryfiers.IPInputVerifier;
 import client.input_veryfiers.PortInputVerifier;
 import client.model.Message;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import javax.swing.*;
 import java.awt.*;
@@ -16,6 +18,8 @@ import java.util.Objects;
  * Класс, отвечающий за функционал интерфейса (Клиентская часть)
  */
 public class gui {
+    private static final Logger logger = LogManager.getLogger(gui.class);
+
     private static String SERVER_ADDRESS = "localhost";
     private static int SERVER_PORT = 12345;
     private Socket socket;
@@ -54,6 +58,7 @@ public class gui {
          * Нажатие на кнопку "Отправить"
          */
         button1.addActionListener(event -> {
+            logger.debug("Button \"Отправить\" clicked");
             String username = "anonymous";
             if (!Objects.equals(usernameTextField.getText(), "")){
                 username = usernameTextField.getText();
@@ -67,6 +72,7 @@ public class gui {
             if (out != null && ipTextField.getInputVerifier().verify(ipTextField) && portTextField.getInputVerifier().verify(portTextField)) {
                 String text = textField1.getText();
                 Message outgoingMessage = new Message(username, text, ZonedDateTime.now());
+                logger.debug("Sending outgoing Message: " + outgoingMessage.toJson());
                 out.println(outgoingMessage.toJson());
                 textField1.setText("");
             }
@@ -78,19 +84,23 @@ public class gui {
          *
          */
         connectButton.addActionListener(actionEvent -> {
+            logger.debug("Button \"Подключиться\" clicked");
             closeSocket();
             textField1.setText("");
             textArea1.setText("");
             SERVER_ADDRESS = ipTextField.getText();
             SERVER_PORT = Integer.parseInt(portTextField.getText());
+            logger.debug("Server address: " + SERVER_ADDRESS + ", Server port: " + SERVER_PORT + ", Username: " + getUsername());
             initializeSocket();
         });
+        logger.info("Application started");
     }
 
     /**
      * Отключение от сервера (закрытие сокета)
      */
     private void closeSocket() {
+        logger.debug("Closing Socket");
         try {
             if (socket != null && !socket.isClosed()) {
                 socket.close();
@@ -101,6 +111,7 @@ public class gui {
             if (out != null) {
                 out.close();
             }
+            logger.debug("Socket closed");
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -118,15 +129,16 @@ public class gui {
      * Открывается сокет и передается имя пользователя, затем создается поток прослушивания входящих сообщений.
      */
     private void initializeSocket() {
+        logger.debug("Initializing Socket");
         try {
             socket = new Socket(SERVER_ADDRESS, SERVER_PORT);
             out = new PrintWriter(socket.getOutputStream(), true);
             in = new BufferedReader(new InputStreamReader(socket.getInputStream()));
 
             out.println(usernameTextField.getText());
+            logger.debug("Socket initialized. Start listening");
             // Начинаем слушать входящие сообщения в отдельном потоке (в текущем крутится интерфейс)
             new Thread(new IncomingMessagesHandler(in, this)).start();
-
         } catch (IOException e) {
             e.printStackTrace();
         }

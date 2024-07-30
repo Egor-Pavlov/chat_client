@@ -2,6 +2,8 @@ package client.IncomingMessagesHandler;
 
 import client.gui;
 import client.model.Message;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import javax.swing.*;
 import java.io.BufferedReader;
@@ -10,33 +12,29 @@ import java.net.SocketException;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
-import java.time.format.DateTimeFormatterBuilder;
-import java.util.Objects;
 
 /**
  * Обработка сообщений от сервера в отдельном потоке
  */
 public class IncomingMessagesHandler implements Runnable {
+    private static final Logger logger = LogManager.getLogger(IncomingMessagesHandler.class);
     private BufferedReader in;
     private client.gui gui;
 
     public IncomingMessagesHandler(BufferedReader in, gui gui) {
         this.in = in;
         this.gui = gui;
+        logger.info("IncomingMessagesHandler initialized");
     }
 
     private String convertDateTime(ZonedDateTime zonedDateTime) {
         String pattern = "HH:mm";
-        // Получение текущих значений года, месяца и дня
         int currentYear = ZonedDateTime.now().getYear();
         int currentDay = ZonedDateTime.now().getDayOfMonth();
 
-        // Проверка дня
         if (zonedDateTime.getDayOfMonth() != currentDay) {
             pattern = "dd.MM HH:mm";
         }
-
-        // Проверка года
         if (zonedDateTime.getYear() != currentYear) {
             pattern = "dd.MM.yyyy HH:mm";
         }
@@ -44,61 +42,42 @@ public class IncomingMessagesHandler implements Runnable {
         return zonedDateTime.format(formatter);
     }
 
-    /**
-     * Обработчик входящих сообщений. Полученное сообщение парсится и если оно отправлено текущим пользователем, то имя заменяется на "you".
-     * При подключении к серверу на сервер отправляется имя пользователя, и если оно не уникально - ответ обработается в блоке "else if"
-     */
     @Override
     public void run() {
         try {
+            logger.info("IncomingMessagesHandler thread started");
             String message;
-            String text;
-            String time;
-            String username;
-            /**
-             * Обработка входящих сообщений
-             */
+
             while ((message = in.readLine()) != null) {
-                /**
-                 * Обработка ответа о занятом имени пользователя
-                 */
-                System.out.println(message);
+                logger.debug("New message received: " + message);
                 if (message.equals("Username already taken")) {
-                    JOptionPane.showMessageDialog(null, "Имя пользователя \""  + gui.getUsername() + "\" уже занято!", "Error", JOptionPane.ERROR_MESSAGE);
+                    logger.warn("Username already taken: " + gui.getUsername());
+                    JOptionPane.showMessageDialog(null, "Имя пользователя \"" + gui.getUsername() + "\" уже занято!", "Error", JOptionPane.ERROR_MESSAGE);
                     gui.clearUsernameTextField();
-                }
-                /**
-                 * Парсинг и вывод сообщений пользователей (и новых сообщений и истории)
-                 */
-                else{
-                    try{
+                } else {
+                    try {
                         Message incomingMessage = Message.fromJson(message);
                         String displayedUsername = "You";
 
-                        // Получение текущей временной зоны
                         ZoneId currentZoneId = ZoneId.systemDefault();
-
-                        // Преобразование даты и времени в текущую временную зону
                         ZonedDateTime dateTime = incomingMessage.getTimestamp().withZoneSameInstant(currentZoneId);
-                        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm");
 
                         if (!incomingMessage.getUsername().equals(gui.getUsername())) {
                             displayedUsername = incomingMessage.getUsername();
                         }
 
                         String finalMessage = convertDateTime(dateTime) + " " + displayedUsername + ":\n    " + incomingMessage.getText();
+                        logger.debug("Processed message:\n " + finalMessage);
                         SwingUtilities.invokeLater(() -> gui.setText(finalMessage + "\n"));
-                    }
-                    catch(Exception e){
-                        System.out.println("Message could not be parsed");
-                        e.printStackTrace();
+                    } catch (Exception e) {
+                        logger.error("Failed to parse message: " + message, e);
                     }
                 }
             }
         } catch (SocketException e) {
-            // Socket is closed, exiting the thread
-            System.out.println("Socket closed, stopping client.gui.IncomingMessagesHandler");
+            logger.info("Socket closed, stopping IncomingMessagesHandler", e);
         } catch (IOException e) {
+            logger.error("IO error occurred in IncomingMessagesHandler", e);
             e.printStackTrace();
         }
     }
