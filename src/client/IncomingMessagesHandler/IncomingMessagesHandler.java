@@ -18,8 +18,8 @@ import java.time.format.DateTimeFormatter;
  */
 public class IncomingMessagesHandler implements Runnable {
     private static final Logger logger = LogManager.getLogger(IncomingMessagesHandler.class);
-    private BufferedReader in;
-    private client.gui gui;
+    private final BufferedReader in;
+    private final client.gui gui;
 
     public IncomingMessagesHandler(BufferedReader in, gui gui) {
         this.in = in;
@@ -60,13 +60,13 @@ public class IncomingMessagesHandler implements Runnable {
                         String displayedUsername = "You";
 
                         ZoneId currentZoneId = ZoneId.systemDefault();
-                        ZonedDateTime dateTime = incomingMessage.getTimestamp().withZoneSameInstant(currentZoneId);
+                        ZonedDateTime dateTime = incomingMessage.timestamp().withZoneSameInstant(currentZoneId);
 
-                        if (!incomingMessage.getUsername().equals(gui.getUsername())) {
-                            displayedUsername = incomingMessage.getUsername();
+                        if (!incomingMessage.username().equals(gui.getUsername())) {
+                            displayedUsername = incomingMessage.username();
                         }
 
-                        String finalMessage = convertDateTime(dateTime) + " " + displayedUsername + ":\n    " + incomingMessage.getText();
+                        String finalMessage = convertDateTime(dateTime) + " " + displayedUsername + ":\n    " + incomingMessage.text();
                         logger.debug("Processed message:\n " + finalMessage);
                         SwingUtilities.invokeLater(() -> gui.setText(finalMessage + "\n"));
                     } catch (Exception e) {
