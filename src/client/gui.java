@@ -9,6 +9,9 @@ import org.apache.logging.log4j.Logger;
 
 import javax.swing.*;
 import java.awt.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.awt.event.KeyAdapter;
 import java.io.*;
 import java.net.*;
 import java.time.ZonedDateTime;
@@ -36,6 +39,7 @@ public class gui {
 
     /**
      * Добавление текста в поле для отображения диалога
+     *
      * @param text - текст для добавления (входящее сообщение)
      */
     public synchronized void setText(String text) {
@@ -44,6 +48,7 @@ public class gui {
 
     /**
      * Получение имени пользователя из текстового поля на интерфейсе
+     *
      * @return - введенное имя пользователя
      */
     public synchronized String getUsername() {
@@ -58,23 +63,14 @@ public class gui {
          * Нажатие на кнопку "Отправить"
          */
         button1.addActionListener(event -> {
-            logger.debug("Button \"Отправить\" clicked");
-            String username = "anonymous";
-            if (!Objects.equals(usernameTextField.getText(), "")){
-                username = usernameTextField.getText();
-            }
+            sendMessage();
+        });
 
-            if (textField1.getText().equals("")){
-                return;
-            }
-            // Отправка текста
-
-            if (out != null && ipTextField.getInputVerifier().verify(ipTextField) && portTextField.getInputVerifier().verify(portTextField)) {
-                String text = textField1.getText();
-                Message outgoingMessage = new Message(username, text, ZonedDateTime.now());
-                logger.debug("Sending outgoing Message: " + outgoingMessage.toJson());
-                out.println(outgoingMessage.toJson());
-                textField1.setText("");
+        // Добавляем ActionListener для обработки нажатия Enter
+        textField1.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                sendMessage();
             }
         });
 
@@ -94,6 +90,29 @@ public class gui {
             initializeSocket();
         });
         logger.info("Application started");
+        textField1.addKeyListener(new KeyAdapter() {
+        });
+    }
+
+    private void sendMessage() {
+        logger.debug("Button \"Отправить\" clicked");
+        String username = "anonymous";
+        if (!Objects.equals(usernameTextField.getText(), "")) {
+            username = usernameTextField.getText();
+        }
+
+        if (textField1.getText().equals("")) {
+            return;
+        }
+        // Отправка текста
+
+        if (out != null && ipTextField.getInputVerifier().verify(ipTextField) && portTextField.getInputVerifier().verify(portTextField)) {
+            String text = textField1.getText();
+            Message outgoingMessage = new Message(username, text, ZonedDateTime.now());
+            logger.debug("Sending outgoing Message: " + outgoingMessage.toJson());
+            out.println(outgoingMessage.toJson());
+            textField1.setText("");
+        }
     }
 
     /**
@@ -146,6 +165,7 @@ public class gui {
 
     /**
      * Точка входа, создание окна, вызов конструктора класса gui
+     *
      * @param args
      */
     public static void main(String[] args) {
@@ -180,5 +200,4 @@ public class gui {
         portTextField.setColumns(5);
         portTextField.setInputVerifier(new PortInputVerifier());
     }
-
 }
