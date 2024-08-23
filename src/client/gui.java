@@ -86,7 +86,7 @@ public class gui {
             textArea1.setText("");
             SERVER_ADDRESS = ipTextField.getText();
             SERVER_PORT = Integer.parseInt(portTextField.getText());
-            logger.debug("Server address: " + SERVER_ADDRESS + ", Server port: " + SERVER_PORT + ", Username: " + getUsername());
+            logger.debug("Server address: {}, Server port: {}, Username: {}", SERVER_ADDRESS, SERVER_PORT, getUsername());
             initializeSocket();
         });
         logger.info("Application started");
@@ -101,7 +101,7 @@ public class gui {
             username = usernameTextField.getText();
         }
 
-        if (textField1.getText().equals("")) {
+        if (textField1.getText().isEmpty()) {
             return;
         }
         // Отправка текста
@@ -132,7 +132,7 @@ public class gui {
             }
             logger.debug("Socket closed");
         } catch (IOException e) {
-            e.printStackTrace();
+            logger.error(e.getMessage(), e);
         }
     }
 
@@ -159,14 +159,14 @@ public class gui {
             // Начинаем слушать входящие сообщения в отдельном потоке (в текущем крутится интерфейс)
             new Thread(new IncomingMessagesHandler(in, this)).start();
         } catch (IOException e) {
-            e.printStackTrace();
+            logger.error("Error due to connect to {}:{} - {}", SERVER_ADDRESS, SERVER_PORT, e.getMessage(), e);
+            JOptionPane.showMessageDialog(null,"Не удается подключиться к "+ SERVER_ADDRESS+":"+SERVER_PORT+"\n" + e.getMessage());
         }
     }
 
     /**
      * Точка входа, создание окна, вызов конструктора класса gui
      *
-     * @param args
      */
     public static void main(String[] args) {
         //создание гуи
